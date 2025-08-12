@@ -1,0 +1,168 @@
+{
+  "nbformat": 4,
+  "nbformat_minor": 0,
+  "metadata": {
+    "colab": {
+      "provenance": [],
+      "authorship_tag": "ABX9TyPODmbIz/Vc9U/3P+sj9Ygx",
+      "include_colab_link": true
+    },
+    "kernelspec": {
+      "name": "python3",
+      "display_name": "Python 3"
+    },
+    "language_info": {
+      "name": "python"
+    }
+  },
+  "cells": [
+    {
+      "cell_type": "markdown",
+      "metadata": {
+        "id": "view-in-github",
+        "colab_type": "text"
+      },
+      "source": [
+        "<a href=\"https://colab.research.google.com/github/jananichennareddy/CODSOFT-AI-INTERNSHIP/blob/main/Tic-Tac-Toe\" target=\"_parent\"><img src=\"https://colab.research.google.com/assets/colab-badge.svg\" alt=\"Open In Colab\"/></a>"
+      ]
+    },
+    {
+      "cell_type": "code",
+      "execution_count": 6,
+      "metadata": {
+        "colab": {
+          "base_uri": "https://localhost:8080/"
+        },
+        "id": "j4B4fqe0Oc7P",
+        "outputId": "2f6f9e08-095f-4712-b2ed-d5dffc225f47"
+      },
+      "outputs": [
+        {
+          "output_type": "stream",
+          "name": "stdout",
+          "text": [
+            " | | \n",
+            "-----\n",
+            " | | \n",
+            "-----\n",
+            " | | \n",
+            "Enter position (0-8): 5\n",
+            " | |O\n",
+            "-----\n",
+            " | |X\n",
+            "-----\n",
+            " | | \n",
+            "Enter position (0-8): 4\n",
+            " | |O\n",
+            "-----\n",
+            "O|X|X\n",
+            "-----\n",
+            " | | \n",
+            "Enter position (0-8): 1\n",
+            " |X|O\n",
+            "-----\n",
+            "O|X|X\n",
+            "-----\n",
+            " |O| \n",
+            "Enter position (0-8): 0\n",
+            "X|X|O\n",
+            "-----\n",
+            "O|X|X\n",
+            "-----\n",
+            " |O|O\n",
+            "Enter position (0-8): 6\n",
+            "X|X|O\n",
+            "-----\n",
+            "O|X|X\n",
+            "-----\n",
+            "X|O|O\n",
+            "Draw!\n"
+          ]
+        }
+      ],
+      "source": [
+        "import math\n",
+        "\n",
+        "# Initialize board\n",
+        "board = [\" \" for _ in range(9)]\n",
+        "\n",
+        "def print_board():\n",
+        "    for i in range(3):\n",
+        "        print(\"|\".join(board[i*3:(i+1)*3]))\n",
+        "        if i < 2:\n",
+        "            print(\"-\"*5)\n",
+        "\n",
+        "def check_winner(b, player):\n",
+        "    win_conditions = [\n",
+        "        [0,1,2], [3,4,5], [6,7,8],  # rows\n",
+        "        [0,3,6], [1,4,7], [2,5,8],  # cols\n",
+        "        [0,4,8], [2,4,6]            # diagonals\n",
+        "    ]\n",
+        "    return any(all(b[pos] == player for pos in combo) for combo in win_conditions)\n",
+        "\n",
+        "def minimax(b, depth, is_maximizing):\n",
+        "    if check_winner(b, \"O\"): return 10 - depth\n",
+        "    if check_winner(b, \"X\"): return depth - 10\n",
+        "    if \" \" not in b: return 0\n",
+        "\n",
+        "    if is_maximizing:\n",
+        "        best_score = -math.inf\n",
+        "        for i in range(9):\n",
+        "            if b[i] == \" \":\n",
+        "                b[i] = \"O\"\n",
+        "                score = minimax(b, depth+1, False)\n",
+        "                b[i] = \" \"\n",
+        "                best_score = max(score, best_score)\n",
+        "        return best_score\n",
+        "    else:\n",
+        "        best_score = math.inf\n",
+        "        for i in range(9):\n",
+        "            if b[i] == \" \":\n",
+        "                b[i] = \"X\"\n",
+        "                score = minimax(b, depth+1, True)\n",
+        "                b[i] = \" \"\n",
+        "                best_score = min(score, best_score)\n",
+        "        return best_score\n",
+        "\n",
+        "def best_move():\n",
+        "    best_score = -math.inf\n",
+        "    move = 0\n",
+        "    for i in range(9):\n",
+        "        if board[i] == \" \":\n",
+        "            board[i] = \"O\"\n",
+        "            score = minimax(board, 0, False)\n",
+        "            board[i] = \" \"\n",
+        "            if score > best_score:\n",
+        "                best_score = score\n",
+        "                move = i\n",
+        "    board[move] = \"O\"\n",
+        "\n",
+        "# Game loop\n",
+        "while True:\n",
+        "    print_board()\n",
+        "    if \" \" not in board or check_winner(board, \"O\") or check_winner(board, \"X\"):\n",
+        "        break\n",
+        "\n",
+        "    # Player move\n",
+        "    player_move = int(input(\"Enter position (0-8): \"))\n",
+        "    if board[player_move] == \" \":\n",
+        "        board[player_move] = \"X\"\n",
+        "\n",
+        "    if \" \" not in board or check_winner(board, \"X\"):\n",
+        "        break\n",
+        "\n",
+        "    # AI move\n",
+        "    best_move()\n",
+        "\n",
+        "print_board()\n",
+        "\n",
+        "if check_winner(board, \"O\"):\n",
+        "    print(\"AI wins!\")\n",
+        "elif check_winner(board, \"X\"):\n",
+        "    print(\"You win!\")\n",
+        "else:\n",
+        "    print(\"Draw!\")"
+      ]
+    }
+  ]
+}
